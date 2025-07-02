@@ -1,6 +1,4 @@
 
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
-import { ContactCard } from "../components/ContactCard.jsx";
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 
@@ -9,6 +7,29 @@ export const Home = () => {
   const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
+
+    const agendaSlug = "ignacont";
+
+    fetch(`https://playground.4geeks.com/contact/agendas/${agendaSlug}`)
+      .then((resp) => {
+        if (!resp.ok) {
+          
+          return fetch("https://playground.4geeks.com/contact/agendas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug: agendaSlug }),
+          });
+        }
+      })
+      .then((resp) => {
+        if (resp && resp.ok) {
+          console.log("Agenda creada correctamente.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error comprobando o creando la agenda:", error);
+      });
+
     fetch("https://playground.4geeks.com/contact/agendas/ignacont")
       .then((response) => response.json())
       .then((data) => {
@@ -22,6 +43,21 @@ export const Home = () => {
         console.log(data.contacts);
       });
   }, []);
+
+  const deleteContact = (id) => {
+    fetch(`https://playground.4geeks.com/contact/agendas/ignacont/contacts/${id}`, {
+      method: "DELETE",
+    })
+      .then((resp) => {
+        if (resp.ok) {
+
+          setContacts(contacts.filter((contact) => contact.id !== id));
+          console.log("Contacto eliminado correctamente");
+        } else {
+          console.error("Error al eliminar contacto");
+        }
+      });
+  };
 
   return (
     <div className="container mt-4">
@@ -49,14 +85,31 @@ export const Home = () => {
               </div>
               <div className="col-md-8">
                 <div className="card-body">
-                  <h5 className="card-title">{contact.name}</h5>
+                  <h5 className="card-title">Name: {contact.name}</h5>
                   <p className="card-text">
-                    {contact.address} <br />
-                    {contact.phone} <br />
-                    {contact.email}
+                    Address: {contact.address} <br />
+                    Phone: {contact.phone} <br />
+                    Email: {contact.email}
                   </p>
                 </div>
               </div>
+              <div className="d-flex justify-content-end mt-2 mb-4">
+                <button
+                  className="btn btn-sm btn-outline-danger me-2"
+                  onClick={() => deleteContact(contact.id)}
+                >
+                  <i className="fas fa-trash-alt"></i>
+                </button>
+
+                <Link
+                  to="/edit"
+                  state={contact}
+                  className="btn btn-sm btn-outline-secondary mx-3 "
+                >
+                  <i className="fas fa-pencil-alt"></i>
+                </Link>
+              </div>
+
             </div>
           </div>
         ))

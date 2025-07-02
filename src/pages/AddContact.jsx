@@ -1,8 +1,8 @@
 
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link } from "react-router-dom";
-import { Form } from "../components/Form.jsx";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const AddContact = () => {
 
@@ -12,7 +12,7 @@ export const AddContact = () => {
     const [address, setAddress] = useState("");
     const [phone, setPhone] = useState("");
     const { store, dispatch } = useGlobalReducer()
-
+    const navigate = useNavigate();
 
 
     const handleSubmit = (e) => {
@@ -38,6 +38,7 @@ export const AddContact = () => {
                 setEmail("");
                 setAddress("");
                 setPhone("");
+                navigate("/");
             });
     };
     return (
@@ -74,6 +75,7 @@ export const AddContact = () => {
         </div>
     );
 }
+
 
 
 
