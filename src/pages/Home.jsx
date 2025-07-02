@@ -13,7 +13,7 @@ export const Home = () => {
     fetch(`https://playground.4geeks.com/contact/agendas/${agendaSlug}`)
       .then((resp) => {
         if (!resp.ok) {
-          
+
           return fetch("https://playground.4geeks.com/contact/agendas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -30,19 +30,26 @@ export const Home = () => {
         console.error("Error comprobando o creando la agenda:", error);
       });
 
-    fetch("https://playground.4geeks.com/contact/agendas/ignacont")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Datos recibidos:", data);
-
-        if (Array.isArray(data.contacts)) {
-          setContacts(data.contacts);
-        } else {
-          console.warn("La respuesta no es un array:", data);
-        }
-        console.log(data.contacts);
-      });
+      getContacts();
   }, []);
+
+  const getContacts = async () => {
+    try {
+      const response = await fetch("https://playground.4geeks.com/contact/agendas/ignacont");
+      if (!response.ok) {
+        throw new Error(`Error al obtener contactos: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Datos recibidos:", data);
+      if (Array.isArray(data.contacts)) {
+        setContacts(data.contacts);
+      } else {
+        console.warn("La respuesta no contiene un array de contactos:", data);
+      }
+    } catch (error) {
+      console.error("Error al cargar contactos:", error);
+    }
+  };
 
   const deleteContact = (id) => {
     fetch(`https://playground.4geeks.com/contact/agendas/ignacont/contacts/${id}`, {
